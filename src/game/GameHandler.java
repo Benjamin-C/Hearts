@@ -71,7 +71,7 @@ public class GameHandler {
 		}
 		
 		out.println("Numbers: | 0: " + player.get(0).getId() + "| 1: " + player.get(1).getId() + "| 2: " + player.get(2).getId() + "| 3: " + player.get(3).getId());
-		out.println("Sorted: | 0: " + users.get(0).getScore() + "| 1: " + users.get(1).getScore() + "| 2: " + users.get(2).getScore() + "| 3: " + users.get(3).getScore());
+		out.println("Sorted: 
 		
 		Player minScore = users.get(0);
 		for(int i = 0; i < users.size(); i++) {
@@ -83,6 +83,13 @@ public class GameHandler {
 		out.println("Winner is " + minScore.getId());
 	}
 	
+	private String runningScoreString() {
+		String out = "";
+		for(int i = 0; i < player.size(); i++) {
+			out = out + " | " + i + "-" + player.get(i).getId() + ": " + player.get(i).getRunninScore();
+		}
+		return out;
+	}
 	private void scoreGame() {
 		int shotMoon = -1;
 		for(int i = 0; i < player.size(); i++) {
@@ -138,7 +145,7 @@ public class GameHandler {
 		int score = score();
 		out.println(leader + " got " + score + " points and has " + player.get(leader).getHandScore());
 		showPlayerHands(player);
-		out.println("Running: | 0: " + player.get(0).getRunninScore() + "| 1: " + player.get(1).getRunninScore() + "| 2: " + player.get(2).getRunninScore() + "| 3: " + player.get(3).getRunninScore());
+		out.println("Running: | 0: " + users.get(0).getRunninScore() + "| 1: " + users.get(1).getRunninScore() + "| 2: " + users.get(2).getRunninScore() + "| 3: " + users.get(3).getRunninScore());
 
 		while(!player.get(0).getHand().isEmpty()) {
 			orderPlayers();
@@ -151,10 +158,10 @@ public class GameHandler {
 			out.println("Table: " + table);
 			out.println(leader + " won");
 			score = score();
-			out.println(leader + " got " + score + " points");
+			out.println(leader + " got " + score + " points and has " + player.get(leader).getHandScore());
 			player.get(leader).addTricks(table);
 			showPlayerHands(player);
-			out.println("Running: | 0: " + player.get(0).getRunninScore()+ "| 1: " + player.get(1).getRunninScore() + "| 2: " + player.get(2).getRunninScore() + "| 3: " + player.get(3).getRunninScore());
+			out.println("Running: | 0: " + users.get(0).getRunninScore()+ "| 1: " + users.get(1).getRunninScore() + "| 2: " + users.get(2).getRunninScore() + "| 3: " + users.get(3).getRunninScore());
 		}
 	}
 	

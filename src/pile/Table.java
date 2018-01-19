@@ -1,5 +1,6 @@
 package pile;
 
+@SuppressWarnings("serial")
 public class Table extends Pile {
 	// Constructor
 	private boolean heartsBroken;
