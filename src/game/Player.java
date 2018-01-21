@@ -1,5 +1,8 @@
 package game;
 
+import java.util.Random;
+import java.util.Scanner;
+
 import inputOutput.Input;
 import inputOutput.Output;
 import pile.Card;
@@ -17,14 +20,20 @@ public class Player {
 	private Pile tricks;
 	private boolean isHuman;
 	private Input in;
+	private String name;
+	private String possibleNames[] = {"Bob", "Jim", "Sally", "Jill", "Bill", "Mark", "Emma", "Sarah"};
 	
 	public Player(int id) {
-		this(new Hand(), 0, id, false);
+		this(new Hand(), 0, id, false, null);
 	}
 	public Player(int id, boolean human) {
-		this(new Hand(), 0, id, human);
+		this(new Hand(), 0, id, human, null);
 	}
-	public Player(Hand h, int score, int id, boolean isHuman) {
+	public Player(int id, boolean human, String name) {
+		this(new Hand(), 0, id, human, name);
+	}
+	@SuppressWarnings("resource")
+	public Player(Hand h, int score, int id, boolean isHuman, String name) {
 		super();
 		this.h = h;
 		this.score = score;
@@ -32,9 +41,28 @@ public class Player {
 		this.isHuman = isHuman;
 		tricks = new Pile();
 		in = new Input();
+		if(name == null) {
+			if(isHuman) {
+				System.out.println("What is your name? (I will take whatever you type on the next line)");
+				Scanner s = new Scanner(System.in);
+				name = "";
+				while(name.length() < 1) {
+					name = s.nextLine();
+					if(name.length() < 1) {
+						System.out.println("You must type a name");
+					}
+				}
+			} else {
+				Random r = new Random();
+				name = possibleNames[r.nextInt(possibleNames.length)];
+			}
+		}
+		this.name = name;
 	}
 	
-	
+	public String getName() {
+		return name;
+	}
 	public int getId() {
 		return id;
 	}
@@ -138,8 +166,8 @@ public class Player {
 		}
 	}
 	
-	public Hand passCards(Output out) {
-		
+	public Hand passCards() {
+		Output out = new Output();
 		Hand pass = new Hand();
 		if(isHuman == true) {
 			for(int i = 0; i < 3; i++) {
@@ -185,7 +213,6 @@ public class Player {
 				}
 				num++;
 			}
-			out.println(id + " is Passing " + pass);
 			return pass;
 		}
 	}
@@ -230,8 +257,16 @@ public class Player {
 				try {
 					c.setValue(Integer.parseInt(num));
 				} catch(NumberFormatException e) {
-					System.out.println("Please try again and give me a number for the card value");
-					failed = true;
+					switch(num) {
+					case "J": {c.setValue(CardValue.JACK); } break;
+					case "Q": {c.setValue(CardValue.QUEEN); } break;
+					case "K": {c.setValue(CardValue.KING); } break;
+					case "A": {c.setValue(CardValue.ACE); } break;
+					default: {
+						System.out.println("Please try again and give me a number for the card value");
+						failed = true;
+					}
+					}
 				}
 				if(c.getValue() < 2) {
 					System.out.println("Please give a number that is at least 2");
@@ -241,10 +276,10 @@ public class Player {
 					System.out.println("Please give me a number that is at most " + CardValue.ACE);
 					failed = true;
 				}
-			}
-			if(!h.contains(c)) {
-				System.out.println("You cant pick the " + c.toString() + " because you don't have it");
-				failed = true;
+				if(!h.contains(c)) {
+					System.out.println("You cant pick the " + c.toString() + " because you don't have it");
+					failed = true;
+				}
 			}
 			if(failed == true) {
 				c = new Card();

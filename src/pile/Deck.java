@@ -2,7 +2,6 @@ package pile;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
 public class Deck extends Pile {
 	
 	// Constructor

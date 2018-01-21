@@ -7,6 +7,16 @@ import inputOutput.Output;
 
 public class Test {
 	public static void main(String args[])  {
+		humanTest();
+	}
+	
+	public static void humanTest() {
+		Output out = new Output(false, true);
+		GameHandler g = new GameHandler(out, true);
+		g.start();
+	}
+	
+	public static void autoTest() {
 		int repeat = 1; // Keep less than
 		ArrayList<Integer> score = new ArrayList<Integer>();
 		ArrayList<Integer> hands = new ArrayList<Integer>();

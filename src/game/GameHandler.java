@@ -14,11 +14,12 @@ public class GameHandler {
 	private int playerCount;
 	private int leader;
 	private Deck deck;
-	Table table;
-	int totalScore;
-	int hands;
+	private Table table;
+	//private int totalScore;
+	private int hands;
+	private boolean hasHuman;
 		
-	public GameHandler(Output o) {
+	public GameHandler(Output o, boolean human) {
 		out = o;
 		player = new ArrayList<Player>();
 		users = new ArrayList<Player>();
@@ -28,6 +29,10 @@ public class GameHandler {
 		table = new Table();
 		deck.shuffle();
 		hands = 0;
+		hasHuman = human;
+	}
+	public GameHandler(Output o) {
+		this(o, true);
 	}
 	
 	public int getTotalScore() {
@@ -40,7 +45,7 @@ public class GameHandler {
 	public void start() {
 		out.println("Beginning game");
 		for(int i = 0; i < playerCount; i++) {
-			if(i == 0) {
+			if(i == 0 && hasHuman == true) {
 				users.add(new Player(i, true));
 			} else {
 				users.add(new Player(i));
@@ -74,7 +79,18 @@ public class GameHandler {
 			out.println("|\\ \\/ \\_/ | \\| |/   \\/  \\/  |- |\\");
 			out.println("Hand:\t" + handScoreString());
 			out.println("Scores:\t" + scoreString());
-			totalScore = player.get(0).getScore() + player.get(1).getScore() + player.get(2).getScore() + player.get(3).getScore();
+			
+			if(hasHuman) {
+				String txt = "";
+				for(int i = 0; i < users.size(); i++) {
+					if(i != 0) {
+						txt = txt + " | ";
+					}
+					txt = txt + users.get(i).getName() + " : " + users.get(i).getScore();
+				}
+				System.out.println("Scores: " + txt);
+			}
+			//totalScore = player.get(0).getScore() + player.get(1).getScore() + player.get(2).getScore() + player.get(3).getScore();
 			//out.println("Total: " + totalScore + " | Per player game " + (totalScore / 1)); // Show the average points per game
 			
 			for(int i = 0; i < player.size(); i++) {
@@ -132,6 +148,11 @@ public class GameHandler {
 				player.get(i).addScore(26);
 			}
 		}
+		if(hasHuman) {
+			if(shotMoon != -1) {
+				System.out.println(users.get(player.get(shotMoon).getId()).getName() + "shot the moon!");
+			}
+		}
 	}
 
 	private void whoFirst() {
@@ -160,38 +181,56 @@ public class GameHandler {
 	}
 	
 	private void playGame() {
-		out.println("Start hand");
+		playCards(true);
+		while(!player.get(0).getHand().isEmpty()) {
+			playCards(false);
+		}
+	}
+	private void playCards(boolean isFirst) {
+		if(isFirst) {
+			for(int i = 0; i < player.size(); i++) {
+				if(player.get(i).getHand().contains(new Card(Suit.SPADE, 2))) {
+					leader = i;
+					break;
+				}
+			}
+		}
+		orderPlayers();
+		out.println("Start round");
 		table.clear();
-		table.add(player.get(0).getHand().remove(new Card(Suit.SPADE, 2)));
-		for(int i = 1; i < player.size(); i++) {
+		for(int i = 0; i < player.size(); i++) {
+			if(i == 0 && isFirst == true) {
+				table.add(player.get(0).getHand().remove(new Card(Suit.SPADE, 2)));
+				if(player.get(0).isHuman()) {
+					System.out.println("You played the 2 of Spades because it is always first");
+				}
+			}
 			table.add(player.get(i).playCard(table));
 		}
 		leader = pickWinner(table);
 		out.println("Table: " + table);
-		out.println(leader + " won");
-		player.get(leader).addTricks(table);
+		out.println(leader + "-" + player.get(leader).getId() + " won");
 		int score = score();
-		out.println(leader + " got " + score + " points and has " + player.get(leader).getHandScore());
+		player.get(leader).addTricks(table);
+		out.println(leader + "-" + player.get(leader).getId() + " got " + score + " points and now has " + player.get(leader).getHandScore());
 		showPlayerHands(player);
 		out.println("Running:" + runningScoreString());
-
-		while(!player.get(0).getHand().isEmpty()) {
-			orderPlayers();
-			out.println("Start round");
-			table.clear();
-			for(int i = 0; i < player.size(); i++) {
-				table.add(player.get(i).playCard(table));
+		if(hasHuman == true) {
+			System.out.println("Table: " + table);
+			System.out.println(users.get(player.get(leader).getId()).getName() + " won and got " + score + " points and now has " + player.get(leader).getHandScore());
+			String txt = "";
+			for(int i = 0; i < users.size(); i++) {
+				if(i != 0) {
+					txt = txt + " | ";
+				}
+				txt = txt + users.get(i).getName() + " : " + users.get(i).getRunninScore();
 			}
-			leader = pickWinner(table);
-			out.println("Table: " + table);
-			out.println(leader + " won");
-			score = score();
-			out.println(leader + "-" + player.get(leader).getId() + " got " + score + " points and has " + player.get(leader).getHandScore());
-			player.get(leader).addTricks(table);
-			showPlayerHands(player);
-			out.println("Running:" + runningScoreString());
+			System.out.println("Here are the scores: " + txt);
+			System.out.println("--------------------------------------");
 		}
 	}
+	
+	
 	
 	private int score() {
 		out.println("Scoreing...");
@@ -233,7 +272,9 @@ public class GameHandler {
 	private void pass(int dir) {
 		Hand pass[] = new Hand[player.size()];
 		for(int i = 0; i < player.size(); i++) {
-			pass[i] = player.get(i).passCards(out);
+			Hand temp = player.get(i).passCards();
+			out.println(player.get(i).getId() + " is Passing " + temp);
+			pass[i] = temp;
 		}
 		
 		out.println("dir " + dir);
@@ -247,6 +288,9 @@ public class GameHandler {
 				loc = i + dir;
 			}
 			player.get(loc).getHand().addAll(pass[i]);
+			if(player.get(loc).isHuman()) {
+				System.out.println("You were passed " + pass[i]);
+			}
 		}
 		
 //		for(int i = 0; i < player.size(); i++) {

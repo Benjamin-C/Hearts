@@ -1,6 +1,5 @@
 package pile;
 
-@SuppressWarnings("serial")
 public class Hand extends Pile{
 
 	public Hand() {

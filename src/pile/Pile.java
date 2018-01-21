@@ -5,7 +5,6 @@ import java.util.Random;
 
 import sort.*;
 
-@SuppressWarnings("serial")
 public class Pile extends ArrayList<Card> {
 	
 	// Constructor
