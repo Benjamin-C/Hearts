@@ -16,6 +16,7 @@ public class GameHandler {
 	private Deck deck;
 	Table table;
 	int totalScore;
+	int hands;
 		
 	public GameHandler(Output o) {
 		out = o;
@@ -26,14 +27,18 @@ public class GameHandler {
 		deck = new Deck();
 		table = new Table();
 		deck.shuffle();
+		hands = 0;
 	}
 	
 	public int getTotalScore() {
 		return player.get(0).getScore() + player.get(1).getScore() + player.get(2).getScore() + player.get(3).getScore();
 	}
+	public int getHands() {
+		return hands;
+	}
 
 	public void start() {
-		out.println("Begining game");
+		out.println("Beginning game");
 		for(int i = 0; i < playerCount; i++) {
 			users.add(new Player(i));
 			player.add(users.get(i));
@@ -42,7 +47,7 @@ public class GameHandler {
 		int maxScore = 0; // Adding playing until 100 points
 		int dir = 0;
 		int pass = 0;
-		while(maxScore < 100) {
+		do {
 			dir++;
 			switch(dir%4) {
 			case 0: pass = 1; break;
@@ -54,24 +59,28 @@ public class GameHandler {
 			showPlayerHands(player);
 			pass(pass);
 			showPlayerHands(player);
-			out.println("Pass 1");
+			out.println("Pass " + pass);
 			whoFirst();
 			orderPlayers();
 			showPlayerHands(player);
 			playGame();
 			scoreGame();
 			
-			out.println("Scores: | 0: " + player.get(0).getScore() + "| 1: " + player.get(1).getScore() + "| 2: " + player.get(2).getScore() + "| 3: " + player.get(3).getScore());
+			out.println("|) /\\ | | |\\ | |\\   /\\ \\  / |- |)");
+			out.println("|\\ \\/ \\_/ | \\| |/   \\/  \\/  |- |\\");
+			out.println("Hand:\t" + handScoreString());
+			out.println("Scores:\t" + scoreString());
 			totalScore = player.get(0).getScore() + player.get(1).getScore() + player.get(2).getScore() + player.get(3).getScore();
 			//out.println("Total: " + totalScore + " | Per player game " + (totalScore / 1)); // Show the average points per game
 			
 			for(int i = 0; i < player.size(); i++) {
 				maxScore = Math.max(maxScore, player.get(i).getScore());
 			}
-		}
+			hands++;
+		} while(maxScore < 100);
 		
-		out.println("Numbers: | 0: " + player.get(0).getId() + "| 1: " + player.get(1).getId() + "| 2: " + player.get(2).getId() + "| 3: " + player.get(3).getId());
-		out.println("Sorted: 
+		out.println("Numbers:| 0: " + player.get(0).getId() + "| 1: " + player.get(1).getId() + "| 2: " + player.get(2).getId() + "| 3: " + player.get(3).getId());
+		out.println("Sorted:\t| 0: " + users.get(0).getScore() + "| 1: " + users.get(1).getScore() + "| 2: " + users.get(2).getScore() + "| 3: " + users.get(3).getScore());
 		
 		Player minScore = users.get(0);
 		for(int i = 0; i < users.size(); i++) {
@@ -90,6 +99,21 @@ public class GameHandler {
 		}
 		return out;
 	}
+	private String scoreString() {
+		String out = "";
+		for(int i = 0; i < player.size(); i++) {
+			out = out + " | " + i + "-" + player.get(i).getId() + ": " + player.get(i).getScore();
+		}
+		return out;
+	}
+	private String handScoreString() {
+		String out = "";
+		for(int i = 0; i < player.size(); i++) {
+			out = out + " | " + i + "-" + player.get(i).getId() + ": " + player.get(i).getHandScore();
+		}
+		return out;
+	}
+	
 	private void scoreGame() {
 		int shotMoon = -1;
 		for(int i = 0; i < player.size(); i++) {
@@ -145,7 +169,7 @@ public class GameHandler {
 		int score = score();
 		out.println(leader + " got " + score + " points and has " + player.get(leader).getHandScore());
 		showPlayerHands(player);
-		out.println("Running: | 0: " + users.get(0).getRunninScore() + "| 1: " + users.get(1).getRunninScore() + "| 2: " + users.get(2).getRunninScore() + "| 3: " + users.get(3).getRunninScore());
+		out.println("Running:" + runningScoreString());
 
 		while(!player.get(0).getHand().isEmpty()) {
 			orderPlayers();
@@ -158,10 +182,10 @@ public class GameHandler {
 			out.println("Table: " + table);
 			out.println(leader + " won");
 			score = score();
-			out.println(leader + " got " + score + " points and has " + player.get(leader).getHandScore());
+			out.println(leader + "-" + player.get(leader).getId() + " got " + score + " points and has " + player.get(leader).getHandScore());
 			player.get(leader).addTricks(table);
 			showPlayerHands(player);
-			out.println("Running: | 0: " + users.get(0).getRunninScore()+ "| 1: " + users.get(1).getRunninScore() + "| 2: " + users.get(2).getRunninScore() + "| 3: " + users.get(3).getRunninScore());
+			out.println("Running:" + runningScoreString());
 		}
 	}
 	
@@ -186,7 +210,7 @@ public class GameHandler {
 	private void showPlayerHands(ArrayList<Player> player) {
 		for(int i = 0; i < player.size(); i++) {
 			player.get(i).getHand().sort();
-			out.println(i + ": " + player.get(i).getHand().toString());
+			out.println(i + "-" + player.get(i).getId() + ": " + player.get(i).getHand().toString());
 		}
 	}
 	

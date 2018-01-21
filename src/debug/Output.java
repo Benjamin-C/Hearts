@@ -8,6 +8,11 @@ public class Output {
 	
 	FileWriter fileWriter;
     PrintWriter printWriter;
+    int num;
+    
+    public void setNum(int n) {
+    	num = n;
+    }
     
     public Output() {
 		try {
@@ -19,14 +24,19 @@ public class Output {
                 printWriter.close();
            } 
 		});
+		num = -1;
 	}
 	
 	public void println(Object msg) {
 		String out = stackTrace(0, 1);
+		if(num > -1) {
+			out = num + " " + out;
+		}
 		if(out.length() < 52) {
 			out = out + "\t";
 		}
 		out = out + "\t";
+		
 		System.out.println(out + msg);
 		printWriter.println(out + msg);
 	}
