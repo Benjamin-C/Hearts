@@ -4,7 +4,7 @@ import pile.*;
 
 import java.util.ArrayList;
 
-import debug.*;
+import inputOutput.*;
 
 public class GameHandler {
 	
@@ -40,7 +40,11 @@ public class GameHandler {
 	public void start() {
 		out.println("Beginning game");
 		for(int i = 0; i < playerCount; i++) {
-			users.add(new Player(i));
+			if(i == 0) {
+				users.add(new Player(i, true));
+			} else {
+				users.add(new Player(i));
+			}
 			player.add(users.get(i));
 		}
 		
@@ -229,46 +233,7 @@ public class GameHandler {
 	private void pass(int dir) {
 		Hand pass[] = new Hand[player.size()];
 		for(int i = 0; i < player.size(); i++) {
-			Hand temp = player.get(i).getHand();
-			Card c = null;
-			int passes = 0;
-			temp.sort();
-			int num = 0;
-			int val = CardValue.ACE;
-			pass[i] = new Hand();
-			
-			while(passes < 3) {
-				// Pass specific cards
-				c = null;
-				switch(num) {
-				case 0: {
-					c = new Card(Suit.CLUB, CardValue.KING);
-				} break;
-				case 1: {
-					c = new Card(Suit.CLUB, CardValue.ACE);
-				} break;
-				default: {
-					do {
-						if(temp.containsValue(val)) {
-							c = temp.getValue(val);
-							break;
-						}
-						val--;
-						if(val < 0) {
-							System.err.println("Value is below 0\n\tat " + out.stackTrace(-2));
-							System.exit(0);
-						}
-					} while(c == null);
-				} break;
-				}
-
-				if(temp.contains(c)) {
-					pass[i].add(player.get(i).getHand().remove(c));
-					passes++;
-				}
-				num++;
-			}
-			out.println(i + " is Passing " + pass[i]);
+			pass[i] = player.get(i).passCards(out);
 		}
 		
 		out.println("dir " + dir);

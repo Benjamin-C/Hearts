@@ -1,4 +1,4 @@
-package debug;
+package inputOutput;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,12 +9,12 @@ public class Output {
 	FileWriter fileWriter;
     PrintWriter printWriter;
     int num;
-    
-    public void setNum(int n) {
-    	num = n;
-    }
+    boolean outType[];
     
     public Output() {
+    	this(true, true);
+    }
+    public Output(boolean console, boolean log) {
 		try {
 			fileWriter = new FileWriter("log.txt");
 			printWriter = new PrintWriter(fileWriter);
@@ -25,6 +25,14 @@ public class Output {
            } 
 		});
 		num = -1;
+		outType = new boolean[] {console, log};
+	}
+    
+	public void setNum(int n) {
+    	num = n;
+    }
+	public void setOutput(boolean console, boolean log) {
+		outType = new boolean[] {console, log};
 	}
 	
 	public void println(Object msg) {
@@ -36,9 +44,12 @@ public class Output {
 			out = out + "\t";
 		}
 		out = out + "\t";
-		
-		System.out.println(out + msg);
-		printWriter.println(out + msg);
+		if(outType[0] == true) {
+			System.out.println(out + msg);
+		}
+		if(outType[1] == true) {
+			printWriter.println(out + msg);
+		}
 	}
 	
 	public String stackTrace() {

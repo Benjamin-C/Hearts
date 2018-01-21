@@ -1,12 +1,13 @@
 package test;
 
 import java.util.ArrayList;
-import debug.Output;
+
 import game.GameHandler;
+import inputOutput.Output;
 
 public class Test {
 	public static void main(String args[])  {
-		int repeat = 2; // Keep less than
+		int repeat = 1; // Keep less than
 		ArrayList<Integer> score = new ArrayList<Integer>();
 		ArrayList<Integer> hands = new ArrayList<Integer>();
 		Output out = new Output();

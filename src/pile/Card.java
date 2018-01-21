@@ -7,6 +7,10 @@ public class Card implements Comparable<Object>{
 	Suit suit;
 	int value;
 	
+	public Card() {
+		suit = null;
+		value = -1;
+	}
 	public Card(Suit suit, int value) {
 		super();
 		this.suit = suit;
@@ -77,5 +81,8 @@ public class Card implements Comparable<Object>{
 			}
 		}
 		return false;
+	}
+	public boolean isValid() {
+		return (value >= 2 && value <= CardValue.ACE && suit != null);
 	}
 }
