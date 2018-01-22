@@ -36,7 +36,7 @@ public class Player {
 	@SuppressWarnings("resource")
 	public Player(Hand h, int score, int id, boolean isHuman, String name) {
 		super();
-		System.out.println(namesUsed);
+		
 		this.h = h;
 		this.score = score;
 		this.id = id;

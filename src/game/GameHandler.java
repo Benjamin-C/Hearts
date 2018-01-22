@@ -50,8 +50,10 @@ public class GameHandler {
 				users.add(new Player(i, true));
 			} else {
 				users.add(new Player(i));
+				
 			}
 			player.add(users.get(i));
+			out.println("Player " + i + " name = " + users.get(i).getName());
 		}
 		
 		int maxScore = 0; // Adding playing until 100 points

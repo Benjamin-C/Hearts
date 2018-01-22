@@ -18,11 +18,11 @@ public class ActionCenter extends Thread {
 	
 	private JFrame jf;
 	private JButton closeButton;
+	private JButton endButton;
 	private JPanel jp;
 	
 	public ActionCenter() {
 		jf = new JFrame();
-		closeButton = new JButton("Close");
 		jp = new JPanel();
 		//addStopButton();
 	}
@@ -46,11 +46,19 @@ public class ActionCenter extends Thread {
 		closeButton.addActionListener(closeButtonActionListener());
 		closeButton.setPreferredSize(new Dimension(64, 64));
 		closeButton.setOpaque(true);
-		closeButton.setBackground(Color.RED);
-		closeButton.setForeground(Color.WHITE);
+		closeButton.setBackground(Color.GREEN);
+		closeButton.setForeground(Color.BLACK);
+		
+		endButton = new JButton("Halt");
+		endButton.addActionListener(endButtonActionListener());
+		endButton.setPreferredSize(new Dimension(64, 64));
+		endButton.setOpaque(true);
+		endButton.setBackground(Color.RED);
+		endButton.setForeground(Color.WHITE);
 		
 		jp.setBackground(Color.BLACK);
 		jp.add(closeButton);
+		jp.add(endButton);
 		//jp.add(pauseButton);
 		//jp.add(resumeButton);
 		jf.add(jp);
@@ -62,6 +70,15 @@ public class ActionCenter extends Thread {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(1);
+			}
+		};
+	}
+	
+	private ActionListener endButtonActionListener() {
+		return new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Runtime.getRuntime().halt(MAX_PRIORITY);
 			}
 		};
 	}
