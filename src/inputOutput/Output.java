@@ -10,20 +10,27 @@ public class Output {
     PrintWriter printWriter;
     int num;
     boolean outType[];
+    HumanReadable hr;
     
     public Output() {
     	this(true, true);
     }
     public Output(boolean console, boolean log) {
-		try {
-			fileWriter = new FileWriter("log.txt");
-			printWriter = new PrintWriter(fileWriter);
-		} catch (IOException e) {}
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {  
-                printWriter.close();
-           } 
-		});
+    	hr = new HumanReadable();
+    	if(log) {
+    		String name = "logs\\log-" + hr.logDate(System.currentTimeMillis());
+			try {
+				fileWriter = new FileWriter(name + ".txt");
+				printWriter = new PrintWriter(fileWriter);
+			} catch (IOException e) {
+				System.out.println("Failed to make file");
+			}
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {  
+	                printWriter.close();
+	           } 
+			});
+    	}
 		num = -1;
 		outType = new boolean[] {console, log};
 	}

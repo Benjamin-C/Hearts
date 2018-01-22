@@ -1,7 +1,6 @@
 package game;
 
 import pile.*;
-
 import java.util.ArrayList;
 
 import inputOutput.*;
@@ -43,7 +42,9 @@ public class GameHandler {
 	}
 
 	public void start() {
-		out.println("Beginning game");
+		HumanReadable humanReadable = new HumanReadable();
+		out.println("Beginning game " + humanReadable.date(System.currentTimeMillis()));
+		
 		for(int i = 0; i < playerCount; i++) {
 			if(i == 0 && hasHuman == true) {
 				users.add(new Player(i, true));
@@ -54,8 +55,9 @@ public class GameHandler {
 		}
 		
 		int maxScore = 0; // Adding playing until 100 points
-		int dir = 0;
+		int dir = -1;
 		int pass = 0;
+		String directionString = "";
 		do {
 			dir++;
 			switch(dir%4) {
@@ -89,6 +91,12 @@ public class GameHandler {
 					txt = txt + users.get(i).getName() + " : " + users.get(i).getScore();
 				}
 				System.out.println("Scores: " + txt);
+				System.out.println("_  _   _   _  _ ___     _____   _____ ___ ");
+				System.out.println("| || | /_\\ | \\| |   \\   / _ \\ \\ / / __| _ \\");
+				System.out.println("| __ |/ _ \\| .\' | |) | | (_) \\ V /| _||   /");
+				System.out.println("|_||_/_/ \\_\\_|\\_|___/   \\___/ \\_/ |___|_|_\\");
+				System.out.println(line());
+				                                             
 			}
 			//totalScore = player.get(0).getScore() + player.get(1).getScore() + player.get(2).getScore() + player.get(3).getScore();
 			//out.println("Total: " + totalScore + " | Per player game " + (totalScore / 1)); // Show the average points per game
@@ -110,6 +118,8 @@ public class GameHandler {
 		}
 		
 		out.println("Winner is " + minScore.getId());
+		System.out.println("Game over");
+		System.out.println(minScore.getName() + " won");
 	}
 	
 	private String runningScoreString() {
@@ -165,6 +175,7 @@ public class GameHandler {
 	}
 	
 	private void setupGame() {
+		table.setHeartsBroken(false);
 		deck = new Deck();
 		deck.shuffle();
 		int pl = 0;
@@ -189,7 +200,7 @@ public class GameHandler {
 	private void playCards(boolean isFirst) {
 		if(isFirst) {
 			for(int i = 0; i < player.size(); i++) {
-				if(player.get(i).getHand().contains(new Card(Suit.SPADE, 2))) {
+				if(player.get(i).getHand().contains(new Card(Suit.CLUB, 2))) {
 					leader = i;
 					break;
 				}
@@ -200,12 +211,13 @@ public class GameHandler {
 		table.clear();
 		for(int i = 0; i < player.size(); i++) {
 			if(i == 0 && isFirst == true) {
-				table.add(player.get(0).getHand().remove(new Card(Suit.SPADE, 2)));
+				table.add(player.get(0).getHand().remove(new Card(Suit.CLUB, 2)));
 				if(player.get(0).isHuman()) {
-					System.out.println("You played the 2 of Spades because it is always first");
+					System.out.println("You played the 2 of Clubs because it is always first");
 				}
+			} else {
+				table.add(player.get(i).playCard(table));
 			}
-			table.add(player.get(i).playCard(table));
 		}
 		leader = pickWinner(table);
 		out.println("Table: " + table);
@@ -217,16 +229,16 @@ public class GameHandler {
 		out.println("Running:" + runningScoreString());
 		if(hasHuman == true) {
 			System.out.println("Table: " + table);
-			System.out.println(users.get(player.get(leader).getId()).getName() + " won and got " + score + " points and now has " + player.get(leader).getHandScore());
+			System.out.println(users.get(player.get(leader).getId()).getName() + " took the trick and got " + score + " points");
 			String txt = "";
 			for(int i = 0; i < users.size(); i++) {
 				if(i != 0) {
 					txt = txt + " | ";
 				}
-				txt = txt + users.get(i).getName() + " : " + users.get(i).getRunninScore();
+				txt = txt + users.get(i).getName() + " : " + users.get(i).getScore();
 			}
-			System.out.println("Here are the scores: " + txt);
-			System.out.println("--------------------------------------");
+			System.out.println("Here are the scores from last hand: " + txt);
+			System.out.println(line());
 		}
 	}
 	
@@ -270,29 +282,48 @@ public class GameHandler {
 		return loc;
 	}
 	private void pass(int dir) {
-		Hand pass[] = new Hand[player.size()];
-		for(int i = 0; i < player.size(); i++) {
-			Hand temp = player.get(i).passCards();
-			out.println(player.get(i).getId() + " is Passing " + temp);
-			pass[i] = temp;
-		}
-		
-		out.println("dir " + dir);
-		for(int i = 0; i < player.size(); i++) {
-			int loc = i;
-			if(i + dir < 0) {
-				loc = player.size() - i - 1;
-			} else if(i + dir > player.size() - 1) {
-				loc = i - player.size() + dir;
-			} else {
-				loc = i + dir;
+		if(dir == 0) {
+			if(hasHuman) {
+				System.out.println("No passing this round");
 			}
-			player.get(loc).getHand().addAll(pass[i]);
-			if(player.get(loc).isHuman()) {
-				System.out.println("You were passed " + pass[i]);
+		} else {
+			if(hasHuman) {
+				System.out.println("You are passing to " + users.get(toLoc(dir, 0, users.size())).getName());
+			}
+			Hand pass[] = new Hand[player.size()];
+			for(int i = 0; i < player.size(); i++) {
+				Hand temp = player.get(i).passCards(out);
+				out.println(player.get(i).getId() + " is Passing " + temp);
+				pass[i] = temp;
+			}
+			
+			out.println("dir " + dir);
+			for(int i = 0; i < player.size(); i++) {
+				int loc = toLoc(dir, i, player.size());
+				player.get(loc).getHand().addAll(pass[i]);
+				if(player.get(loc).isHuman()) {
+					System.out.println("You were passed " + pass[i]);
+				}
 			}
 		}
-		
+	}
+	
+	private int toLoc(int to, int from, int size) {
+		int loc = from;
+		if(from + to < 0) {
+			loc = size - from - 1;
+		} else if(from + to > size - 1) {
+			loc = from - size + to;
+		} else {
+			loc = from + to;
+		}
+		return loc;
+	}
+	private String line() {
+			return "--------------------------------------";
+		}
+}
+
 //		for(int i = 0; i < player.size(); i++) {
 //			if(i == (player.size() - dir)) {
 //				player.get(i).getHand().addAll(pass[1 - dir]);
@@ -304,6 +335,3 @@ public class GameHandler {
 //				leader = i;
 //			}
 //		}
-	}
-
-}

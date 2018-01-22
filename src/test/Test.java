@@ -1,13 +1,19 @@
 package test;
 
 import java.util.ArrayList;
-
 import game.GameHandler;
+import inputOutput.ActionCenter;
 import inputOutput.Output;
 
+/*TODO
+ * add exit feature that saves logs
+ */
 public class Test {
 	public static void main(String args[])  {
+		ActionCenter ac = new ActionCenter();
+		ac.start();
 		humanTest();
+		//autoTest();
 	}
 	
 	public static void humanTest() {
@@ -17,14 +23,14 @@ public class Test {
 	}
 	
 	public static void autoTest() {
-		int repeat = 1; // Keep less than
+		int repeat = 16; // Keep less than
 		ArrayList<Integer> score = new ArrayList<Integer>();
 		ArrayList<Integer> hands = new ArrayList<Integer>();
 		Output out = new Output();
 		long start = System.currentTimeMillis();
 		for(int i = 0; i < repeat; i++) {
 			out.setNum(i);
-			GameHandler g = new GameHandler(out);
+			GameHandler g = new GameHandler(out, false);
 			g.start();
 			out.println(g.getTotalScore());
 			score.add(g.getTotalScore());

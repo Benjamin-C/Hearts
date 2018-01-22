@@ -4,7 +4,7 @@ public class Table extends Pile {
 	// Constructor
 	private boolean heartsBroken;
 	public Table() {
-		heartsBroken = false;
+		//heartsBroken = false;
 	}
 
 	@Override
@@ -17,15 +17,16 @@ public class Table extends Pile {
 	
 	@Override
 	public void clear() {
-		heartsBroken = false;
+		//heartsBroken = false;
 		super.clear();
 	}
 
 	public boolean isHeartsBroken() {
 		return heartsBroken;
 	}
-
-	public void setHeartsBroken(boolean heartsBroken) {
-		this.heartsBroken = heartsBroken;
+	
+	public void setHeartsBroken(Boolean b) {
+		heartsBroken = b;
 	}
+	
 }

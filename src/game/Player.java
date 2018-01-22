@@ -21,6 +21,7 @@ public class Player {
 	private boolean isHuman;
 	private Input in;
 	private String name;
+	private static boolean namesUsed[];
 	private String possibleNames[] = {"Bob", "Jim", "Sally", "Jill", "Bill", "Mark", "Emma", "Sarah"};
 	
 	public Player(int id) {
@@ -35,12 +36,16 @@ public class Player {
 	@SuppressWarnings("resource")
 	public Player(Hand h, int score, int id, boolean isHuman, String name) {
 		super();
+		System.out.println(namesUsed);
 		this.h = h;
 		this.score = score;
 		this.id = id;
 		this.isHuman = isHuman;
 		tricks = new Pile();
 		in = new Input();
+		if(namesUsed == null) {
+			namesUsed = new boolean[] {false, false, false, false, false, false, false, false};
+		}
 		if(name == null) {
 			if(isHuman) {
 				System.out.println("What is your name? (I will take whatever you type on the next line)");
@@ -54,10 +59,20 @@ public class Player {
 				}
 			} else {
 				Random r = new Random();
-				name = possibleNames[r.nextInt(possibleNames.length)];
+				while(name == null) {
+					int i = r.nextInt(possibleNames.length);
+					if(namesUsed[i] == false) {
+						name = possibleNames[i];
+						namesUsed[i] = true;
+					}	
+				}
+				
 			}
 		}
 		this.name = name;
+		if(namesUsed == null) {
+			
+		}
 	}
 	
 	public String getName() {
@@ -166,8 +181,7 @@ public class Player {
 		}
 	}
 	
-	public Hand passCards() {
-		Output out = new Output();
+	public Hand passCards(Output out) {
 		Hand pass = new Hand();
 		if(isHuman == true) {
 			for(int i = 0; i < 3; i++) {
@@ -224,7 +238,7 @@ public class Player {
 		String ins = "";
 		while(!c.isValid()) {
 			boolean failed = false;
-			ins = in.getLine().toUpperCase();
+			ins = in.getLine().toUpperCase().replaceAll(" ", "");
 			c = new Card();
 			switch(ins.charAt(0)) {
 			case '?': {
@@ -277,7 +291,7 @@ public class Player {
 					failed = true;
 				}
 				if(!h.contains(c)) {
-					System.out.println("You cant pick the " + c.toString() + " because you don't have it");
+					System.out.println("You can't pick the " + c.toString() + " because you don't have it");
 					failed = true;
 				}
 			}
